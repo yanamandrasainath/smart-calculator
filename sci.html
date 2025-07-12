@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scientific Calculator with Matrix Operations</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .calculator {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      height: 100%;
+      justify-content: space-between;
+    }
+    .logo {
+      max-width: 1500px;
+      margin-bottom: 15px;
+    }
+    h1 {
+      color: #090a0b;
+      font-size: 34px;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      box-shadow: inset 0 0 5px rgba(130, 45, 45, 0.1);
+    }
+    input, select {
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+    }
+    button {
+      background: linear-gradient(135deg, #0072ff, #005bb5);
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease-in-out;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #005bb5, #003e80);
+      transform: scale(1.05);
+    }
+    #result {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      background: #f1f1f1;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    }
+  </style>
+  <script>
+    function calculate() {
+      let num1 = parseFloat(document.getElementById('num1').value);
+      let num2 = parseFloat(document.getElementById('num2').value);
+      let operator = document.getElementById('operator').value;
+      let result;
+      let resultText = "";
+
+      if (isNaN(num1) || (operator !== "factorial" && isNaN(num2) && !operator.includes("matrix") && operator !== "squareRoot" && !operator.includes("sine") && !operator.includes("cosine") && !operator.includes("tangent") && !operator.includes("logarithm") && !operator.includes("exponential"))) {
+        alert("Please enter valid numbers.");
+        return;
+      }
+
+      switch (operator) {
+        case 'addition':
+          result = num1 + num2;
+          resultText = "Result: " + result;
+          break;
+        case 'subtraction':
+          result = num1 - num2;
+          resultText = "Result: " + result;
+          break;
+        case 'multiplication':
+          result = num1 * num2;
+          resultText = "Result: " + result;
+          break;
+        case 'division':
+          if (num2 === 0) {
+            alert("Cannot divide by zero!");
+            return;
+          }
+          result = num1 / num2;
+          resultText = "Result: " + result;
+          break;
+        case 'celsiusToFahrenheit':
+          result = (num1 * 9/5) + 32;
+          resultText = "Result: " + result + " Fahrenheit";
+          break;
+        case 'fahrenheitToCelsius':
+          result = (num1 - 32) * 5/9;
+          resultText = "Result: " + result + " Celsius";
+          break;
+        case 'kmToMiles':
+          result = num1 * 0.621371;
+          resultText = "Result: " + result + " Miles";
+          break;
+        case 'milesToKm':
+          result = num1 / 0.621371;
+          resultText = "Result: " + result + " Kilometers";
+          break;
+        case 'kgToPounds':
+          result = num1 * 2.20462;
+          resultText = "Result: " + result + " Pounds";
+          break;
+        case 'poundsToKg':
+          result = num1 / 2.20462;
+          resultText = "Result: " + result + " Kilograms";
+          break;
+        case 'power':
+          result = Math.pow(num1, num2);
+          resultText = "Result: " + result;
+          break;
+        case 'squareRoot':
+          if (num1 < 0) {
+            alert("Cannot calculate square root of negative number!");
+            return;
+          }
+          result = Math.sqrt(num1);
+          resultText = "Result: " + result;
+          break;
+        case 'sine':
+          result = Math.sin(num1);
+          resultText = "Result: " + result;
+          break;
+        case 'cosine':
+          result = Math.cos(num1);
+          resultText = "Result: " + result;
+          break;
+        case 'tangent':
+          result = Math.tan(num1);
+          resultText = "Result: " + result;
+          break;
+        case 'logarithm':
+          if (num1 <= 0) {
+            alert("Logarithm base must be >0");
+            return;
+          }
+          result = Math.log10(num1);
+          resultText = "Result: " + result;
+          break;
+        case 'exponential':
+          result = Math.exp(num1);
+          resultText = "Result: " + result;
+          break;
+        case 'factorial':
+          if (num1 < 0 || num1 % 1 !== 0) {
+            alert("Enter a non-negative integer for factorial.");
+            return;
+          }
+          result = 1;
+          for (let i = 1; i <= num1; i++) {
+            result *= i;
+          }
+          resultText = "Result: " + result;
+          break;
+        case 'matrixAdd':
+          let rows1 = parseInt(prompt("Enter rows of matrix 1:"));
+          let cols1 = parseInt(prompt("Enter columns of matrix 1:"));
+          let rows2 = parseInt(prompt("Enter rows of matrix 2:"));
+          let cols2 = parseInt(prompt("Enter columns of matrix 2:"));
+          if (rows1 !== rows2 || cols1 !== cols2) {
+            alert("Matrix dimensions must match.");
+            return;
+          }
+          let matrix1 = [], matrix2 = [], resultMatrixAdd = [];
+          for (let i = 0; i < rows1; i++) {
+            matrix1[i] = prompt(`Enter row ${i + 1} of matrix 1 (space separated):`).split(' ').map(Number);
+            matrix2[i] = prompt(`Enter row ${i + 1} of matrix 2 (space separated):`).split(' ').map(Number);
+            resultMatrixAdd[i] = [];
+            for (let j = 0; j < cols1; j++) {
+              resultMatrixAdd[i][j] = matrix1[i][j] + matrix2[i][j];
+            }
+          }
+          resultText = "Matrix Addition Result: " + JSON.stringify(resultMatrixAdd);
+          break;
+        case 'matrixMultiply':
+          let rowsM1 = parseInt(prompt("Rows of matrix 1:"));
+          let colsM1 = parseInt(prompt("Columns of matrix 1:"));
+          let rowsM2 = parseInt(prompt("Rows of matrix 2:"));
+          let colsM2 = parseInt(prompt("Columns of matrix 2:"));
+          if (colsM1 !== rowsM2) {
+            alert("Columns of matrix 1 must equal rows of matrix 2.");
+            return;
+          }
+          let m1 = [], m2 = [], resultMul = [];
+          for (let i = 0; i < rowsM1; i++) {
+            m1[i] = prompt(`Enter row ${i + 1} of matrix 1:`).split(' ').map(Number);
+          }
+          for (let i = 0; i < rowsM2; i++) {
+            m2[i] = prompt(`Enter row ${i + 1} of matrix 2:`).split(' ').map(Number);
+          }
+          for (let i = 0; i < rowsM1; i++) {
+            resultMul[i] = [];
+            for (let j = 0; j < colsM2; j++) {
+              let sum = 0;
+              for (let k = 0; k < colsM1; k++) {
+                sum += m1[i][k] * m2[k][j];
+              }
+              resultMul[i][j] = sum;
+            }
+          }
+          resultText = "Matrix Multiplication Result: " + JSON.stringify(resultMul);
+          break;
+        default:
+          alert("Invalid operator.");
+          return;
+      }
+      document.getElementById('result').innerHTML = resultText.replace(/\n/g, '<br/>');
+    }
+  </script>
+</head>
+<body>
+  <div class="calculator">
+    <img src="https://tse2.mm.bing.net/th?id=OIP.UlK5wEJUYbhfxZqn_NGBBwAAAA&pid=Api&P=0&h=180" alt="Logo" class="logo">
+    <h1>Scientific Calculator</h1>
+    <form onsubmit="event.preventDefault(); calculate();">
+      <input type="text" id="num1" placeholder="Number 1" required>
+      <input type="text" id="num2" placeholder="Number 2 (if applicable)">
+      <select id="operator">
+        <option value="addition">Addition (+)</option>
+        <option value="subtraction">Subtraction (-)</option>
+        <option value="multiplication">Multiplication (*)</option>
+        <option value="division">Division (/)</option>
+        <option value="celsiusToFahrenheit">Celsius to Fahrenheit</option>
+        <option value="fahrenheitToCelsius">Fahrenheit to Celsius</option>
+        <option value="kmToMiles">Kilometers to Miles</option>
+        <option value="milesToKm">Miles to Kilometers</option>
+        <option value="kgToPounds">Kilograms to Pounds</option>
+        <option value="poundsToKg">Pounds to Kilograms</option>
+        <option value="power">Power (x^y)</option>
+        <option value="squareRoot">Square Root (√x)</option>
+        <option value="sine">Sine</option>
+        <option value="cosine">Cosine</option>
+        <option value="tangent">Tangent</option>
+        <option value="logarithm">Logarithm (log10)</option>
+        <option value="exponential">Exponential (exp)</option>
+        <option value="factorial">Factorial</option>
+        <option value="matrixAdd">Matrix Addition</option>
+        <option value="matrixMultiply">Matrix Multiplication</option>
+      </select>
+      <button type="submit">Calculate</button>
+    </form>
+    <div id="result"></div>
+  </div>
+</body>
+</html>
