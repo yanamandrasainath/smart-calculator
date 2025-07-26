@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Image App</title>
+  <style>
+    body { font-family: Arial; background: #f2f2f2; padding: 20px; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; }
+    #imageDisplay img { max-width: 100%; height: auto; margin: 10px 0; cursor: pointer; }
+    .image-box { border: 1px solid #ccc; padding: 10px; margin: 10px 0; text-align: center; }
+    #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; }
+    #modal img { max-width: 90%; max-height: 90%; }
+    .download-btn { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Simple Image Storage App</h2>
+
+  <div id="authSection">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="mainApp" style="display:none;">
+    <h3>Welcome!</h3>
+    <button onclick="logout()">Logout</button>
+
+    <h4>Upload Image</h4>
+    <input type="file" id="imgInput">
+    <input type="text" id="imgName" placeholder="Enter image name">
+    <button onclick="uploadImage()">Upload</button>
+
+    <h4>Search Image</h4>
+    <input type="text" id="searchName" placeholder="Search by image name">
+    <button onclick="fetchImage()">Search</button>
+
+    <div id="imageDisplay"></div>
+  </div>
+</div>
+
+<div id="modal" onclick="this.style.display='none'">
+  <img id="modalImg">
+</div>
+
+<script>
+  let currentUser = null;
+
+  function register() {
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("password").value.trim();
+    if (!email || !pass) return alert("Enter email & password");
+
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+    if (users[email]) return alert("User already exists");
+
+    users[email] = pass;
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Registered successfully");
+  }
+
+  function login() {
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("password").value.trim();
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+
+    if (users[email] === pass) {
+      currentUser = email;
+      document.getElementById("authSection").style.display = "none";
+      document.getElementById("mainApp").style.display = "block";
+      alert("Login successful");
+    } else {
+      alert("Invalid credentials");
+    }
+  }
+
+  function logout() {
+    currentUser = null;
+    document.getElementById("authSection").style.display = "block";
+    document.getElementById("mainApp").style.display = "none";
+  }
+
+  function uploadImage() {
+    const file = document.getElementById("imgInput").files[0];
+    const name = document.getElementById("imgName").value.trim();
+    if (!file || !name) return alert("Select file and enter name");
+
+    const reader = new FileReader();
+    reader.onload = function () {
+      const base64 = reader.result;
+      const key = `${currentUser}_${name}`;
+      localStorage.setItem(key, base64);
+      alert("Image uploaded");
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function fetchImage() {
+    const name = document.getElementById("searchName").value.trim();
+    const key = `${currentUser}_${name}`;
+    const data = localStorage.getItem(key);
+
+    const display = document.getElementById("imageDisplay");
+    display.innerHTML = "";
+
+    if (data) {
+      const box = document.createElement("div");
+      box.className = "image-box";
+
+      const img = document.createElement("img");
+      img.src = data;
+      img.onclick = () => showModal(data);
+
+      const link = document.createElement("a");
+      link.href = data;
+      link.download = name + ".png";
+      link.innerText = "Download";
+      link.className = "download-btn";
+
+      box.appendChild(img);
+      box.appendChild(link);
+      display.appendChild(box);
+    } else {
+      display.innerText = "Image not found";
+    }
+  }
+
+  function showModal(url) {
+    document.getElementById("modalImg").src = url;
+    document.getElementById("modal").style.display = "flex";
+  }
+</script>
+
+</body>
+</html>
